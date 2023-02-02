@@ -17,3 +17,4 @@ finetuned_vae_ckpts/*
 notes.py
 *.whl
 temp/*.pdb
+*.fasta 
