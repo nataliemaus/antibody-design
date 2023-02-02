@@ -10,7 +10,7 @@ PARENTAL_H_CHIAN = "EVQLVESGGGLVQPGGSLRLSCAASGYDFTHYGMNWVRQAPGKGLEWVGWINTYTGEPTY
 WORK_DIR = "/home/nmaus/"
 
 # name of repo 
-REPO_NAME = "constrained-lolbo-for-antibodies"
+REPO_NAME = "antibody-design"
 
 # path to state dict of OAS VAE
 PATH_TO_VAE_STATE_DICT = WORK_DIR + REPO_NAME + "/oas_heavy_ighg_vae/saved_models/likely-deluge-195_model_state.pkl"
