@@ -60,7 +60,7 @@ The maximum allowed length of any antibody sequence. Decrease this if you are ru
 ## --task_id 
 Specifies the objective, can be dfire, dfire2, or cpydock 
 
-# --bsz
+## --bsz
 Batch size (number of sequences queried at once on each optimization step)
 
 
