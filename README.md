@@ -3,6 +3,11 @@ Code to run constrained lolbo for ab design (default is VAE pre-trained on OAS I
 
 # Getting Started 
 
+## dockbo 
+Make sure you have cloned dockbo in the same folder as you clone this repo. This repo uses dockbo to compute dfire, dfire2 and cpydock scores used to optimize:
+
+https://github.com/nataliemaus/dockbo
+
 ## Environment requirements 
 pytorch 
 fcd_torch 
