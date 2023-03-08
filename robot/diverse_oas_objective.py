@@ -1,3 +1,4 @@
+# from robot.molecules.selfies_vae.model_positional_unbounded import SELFIESDataset
 import numpy as np
 import torch 
 import sys 
@@ -5,7 +6,7 @@ sys.path.append("../")
 sys.path.append("../../dockbo/")
 from oas_heavy_ighg_vae.transformer_vae_unbounded import InfoTransformerVAE
 from oas_heavy_ighg_vae.data import collate_fn, DataModuleKmers
-from lolbo.latent_space_objective import LatentSpaceObjective
+from robot.latent_space_objective import LatentSpaceObjective
 from seq_to_score import seqs_to_scores, compute_edit_distance
 from igfold import IgFoldRunner, init_pyrosetta 
 from dockbo.dockbo import DockBO
@@ -16,7 +17,7 @@ from constants import (
     PARENTAL_H_CHIAN
 )
 
-class OasObjective(LatentSpaceObjective):
+class DiverseOASObjective(LatentSpaceObjective):
     '''OasObjective class supports all antibody IGIH heavy chain
          optimization tasks and uses the OAS VAE by default '''
 
@@ -33,9 +34,10 @@ class OasObjective(LatentSpaceObjective):
         work_dir=WORK_DIR,
         optimize_pose=False,
         max_allowed_edit_dist=-1,
+        lb=None,
+        ub=None,
     ):
-        assert task_id in ["dfire", "dfire2", "cpydock"]
-        self.dim                    = 256 # SELFIES VAE DEFAULT LATENT SPACE DIM
+        self.dim                    = 256 # VAE DEFAULT LATENT SPACE DIM
         self.path_to_vae_statedict  = path_to_vae_statedict # path to trained vae stat dict
         self.max_string_length      = max_string_length # max string length that VAE can generate
         # self.min_length_constraint  = min_length_constraint
@@ -43,7 +45,7 @@ class OasObjective(LatentSpaceObjective):
         self.optimize_pose          = optimize_pose
 
         # max allowed number of edits from the parental h chian sequence 
-        #   * set MAX_ALLOWED_EDIT_DIST = -1 to allow any number of edits 
+        #   * set MAX_ALLOWED_EDIT_DIST = -1 to allow any number of edits  
         self.max_allowed_edit_dist = max_allowed_edit_dist
 
         init_pyrosetta()
@@ -62,13 +64,15 @@ class OasObjective(LatentSpaceObjective):
             init_n_epochs=20,
             update_n_epochs=2,
         )
-
+        
         super().__init__(
             num_calls=num_calls,
             xs_to_scores_dict=xs_to_scores_dict,
             task_id=task_id,
+            dim=self.dim, #  DEFAULT VAE LATENT SPACE DIM
+            lb=lb,
+            ub=ub,
         )
-
 
     def vae_decode(self, z):
         '''Input
@@ -92,34 +96,20 @@ class OasObjective(LatentSpaceObjective):
 
     def query_oracle(self, x):
         ''' Input: 
-                list of items x (list of aa seqs)
+                a single input space item x
             Output:
                 method queries the oracle and returns 
                 the corresponding score y,
                 or np.nan in the case that x is an invalid input
-                for each item in input list
         '''
         # method assumes x is a single smiles string
         scores = seqs_to_scores(
-            seqs=x,
+            seqs=[x],
             igfold_runner=self.igfold_runner,
             oracle=self.oracle,
             optimize_pose=self.optimize_pose,
         )
-        # scores = []
-        # for seq in x:
-        #     energy = seq_to_score(
-        #         aa_seq=seq,
-        #         igfold_runner=self.igfold_runner,
-        #         oracle=self.oracle,
-        #         optimize_pose=self.optimize_pose,
-        #     )
-        #     scores.append(energy)
-        # scores = [len(seq) for seq in x]
-        # score = smiles_to_desired_scores([x], self.task_id, tdc_oracle=self.tdc_oracle).item()
-
-        return scores
-
+        return scores[0]
 
     def initialize_vae(self):
         ''' Sets self.vae to the desired pretrained vae and 
@@ -143,6 +133,7 @@ class OasObjective(LatentSpaceObjective):
         self.vae = self.vae.eval()
         # set max string length that VAE can generate
         self.vae.max_string_length = self.max_string_length
+
 
     def vae_forward(self, xs_batch):
         ''' Input: 
@@ -188,14 +179,10 @@ class OasObjective(LatentSpaceObjective):
         else:
             return None 
 
+    def divf(self, x1, x2):
+        ''' Compute edit distance between two 
+            potential optimal sequences so we can
+            create a diverse set of optimal solutions
+            with some minimum edit distance between eachother'''
+        return compute_edit_distance(x1, x2) 
 
-if __name__ == "__main__":
-    # testing molecule objective
-    obj1 = OasObjective(task_id='pdop' ) 
-    print(obj1.num_calls)
-    dict1 = obj1(torch.randn(10,256))
-    print(dict1['scores'], obj1.num_calls)
-    dict1 = obj1(torch.randn(3,256))
-    print(dict1['scores'], obj1.num_calls)
-    dict1 = obj1(torch.randn(1,256))
-    print(dict1['scores'], obj1.num_calls)

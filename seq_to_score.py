@@ -150,10 +150,10 @@ def compute_edit_distance(s1, s2):
 
 # conda activate og_lolbo_mols 
 # tmux attach -t run   !!! 
-# CUDA_VISIBLE_DEVICES=0 python3 oas_optimization.py --task_id dfire --track_with_wandb True --wandb_entity nmaus --min_allowed_edit_dist 40 --num_initialization_points 20 --max_string_length 200 --bsz 2 - run_lolbo - done 
+# CUDA_VISIBLE_DEVICES=0 python3 oas_optimization.py --task_id dfire --track_with_wandb True --wandb_entity nmaus --max_allowed_edit_dist 40 --num_initialization_points 20 --max_string_length 200 --bsz 2 - run_lolbo - done 
 # actually working (getting scores of 2, 2, 8, ... )
 # tmux attach -t run2 
-# CUDA_VISIBLE_DEVICES=1 python3 oas_optimization.py --optimize_pose True --task_id dfire --track_with_wandb True --wandb_entity nmaus --min_allowed_edit_dist 40 --num_initialization_points 20 --max_string_length 200 --bsz 2 - run_lolbo - done 
+# CUDA_VISIBLE_DEVICES=1 python3 oas_optimization.py --optimize_pose True --task_id dfire --track_with_wandb True --wandb_entity nmaus --max_allowed_edit_dist 40 --num_initialization_points 20 --max_string_length 200 --bsz 2 - run_lolbo - done 
 # ^^ now running second one where we allow small pose opt (see if scores increaase now :) ... ) 
 # current env saved as text file here: 
 #   conda list --explicit > opt_ab.txt
@@ -163,7 +163,7 @@ def compute_edit_distance(s1, s2):
 
 # conda activate pymol  
 # tmux attach -t run2   !!! 
-# CUDA_VISIBLE_DEVICES=1 python3 oas_optimization.py --task_id dfire --track_with_wandb True --wandb_entity nmaus --min_allowed_edit_dist 20 --num_initialization_points 20 --max_string_length 200 --bsz 3 - run_lolbo - done 
+# CUDA_VISIBLE_DEVICES=1 python3 oas_optimization.py --task_id dfire --track_with_wandb True --wandb_entity nmaus --max_allowed_edit_dist 20 --num_initialization_points 20 --max_string_length 200 --bsz 3 - run_lolbo - done 
 # ** seems to be running significantly faster, not sure if that's because it fails faster tho or what
 # JK, all zero on null scores, garbage file
 # KILLED! 
