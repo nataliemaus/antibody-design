@@ -90,8 +90,8 @@ cd robot_script/
 CUDA_VISIBLE_DEVICES=0 python3 diverse_oas_optimization.py --task_id dfire \
 --max_n_oracle_calls 5000000 --bsz 10 \
 --track_with_wandb True --wandb_entity nmaus \
---max_allowed_edit_dist 3000 --num_initialization_points 10000 \
---max_string_length 60 --M 3 --tau 2 --save_csv_frequency 2 - run_robot - done 
+--max_allowed_edit_dist 30 --num_initialization_points 10000 \
+--max_string_length 60 --M 10 --tau 5 --save_csv_frequency 10 - run_robot - done 
 ```
 
 ## Additional Arguments (All other args are the same as for regular LOL-BO above): 
